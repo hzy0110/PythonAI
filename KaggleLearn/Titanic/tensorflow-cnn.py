@@ -11,6 +11,7 @@ import tensorflow as tf
 import warnings
 from sklearn.feature_selection import SelectKBest, f_classif
 from sklearn import preprocessing
+from sklearn import model_selection
 
 warnings.filterwarnings('ignore')
 
@@ -210,7 +211,7 @@ def accuracy(logits, labels):
     labels: Labels tensor,
   """
     with tf.name_scope('accuracy') as scope:
-        correct = tf.equal(tf.arg_max(logits, 1), tf.arg_max(labels, 1))
+        correct = tf.equal(tf.argmax(logits, 1), tf.argmax(labels, 1))
         correct = tf.cast(correct, tf.float32)
         accuracy = tf.reduce_mean(correct) * 100.0
         tf.summary.scalar(scope + '/accuracy', accuracy)
@@ -227,11 +228,10 @@ def savecsv(test_prediction_np, filename="submission_tf_titanic.csv"):
 
 
 # 形成验证数据
-# from sklearn import model_selection
 
 
-# train_dataset, valid_dataset = model_selection.train_test_split(tf_train, test_size=0.3, random_state=0)
-# train_labels, valid_labels = model_selection.train_test_split(y, test_size=0.3, random_state=0)
+train_dataset, valid_dataset = model_selection.train_test_split(tf_train_new, test_size=0.3, random_state=0)
+train_labels, valid_labels = model_selection.train_test_split(y, test_size=0.3, random_state=0)
 # print(train_dataset.shape)
 # print(valid_dataset.shape)
 # print(train_labels.shape)
@@ -312,7 +312,7 @@ with graphCNN.as_default():
 
     # 0.01学习效率,minimize(loss)减小loss误差
     train_step = tf.train.AdamOptimizer(0.03).minimize(cross_entropy)
-    accuracy = accuracy(cross_entropy, ys)
+    accuracy = accuracy(prediction, ys)
 # In[39]:
 
 
@@ -323,35 +323,51 @@ print("y.shape", y.shape)
 print(type(tf_train_new))
 print(type(y))
 
-summary_op = tf.summary.merge_all()
+
 with tf.Session(graph=graphCNN) as sess:
     # important step
     # tf.initialize_all_variables() no long valid from
     # 2017-03-02 if using tensorflow >= 0.12
     sess.run(tf.global_variables_initializer())
-
+    summary_op = tf.summary.merge_all()
     train_log_dir = './logs/train/'
     val_log_dir = './logs/val/'
 
     tra_summary_writer = tf.summary.FileWriter(train_log_dir, sess.graph)
     val_summary_writer = tf.summary.FileWriter(val_log_dir, sess.graph)
 
+    # train_dataset, valid_dataset
+    # train_labels, valid_labels
+
+    batch_size = 32
+
+
     # 训练500次
-    for i in range(10000):
+    for i in range(500):
+        # offset = (i * batch_size) % (train_labels.shape[0] - batch_size)
+        # batch_data_train = train_dataset[offset:(offset + batch_size), :, :, :]
+        # batch_labels_train = train_labels[offset:(offset + batch_size), :]
+        #
+        # batch_data_valid = valid_dataset[offset:(offset + batch_size), :, :, :]
+        # batch_labels_valid = valid_labels[offset:(offset + batch_size), :]
 
         #     feed_dict_test = {tf_train_dataset : X_test_new_ss}
         #     feed_dict = {tf_train_dataset : X_tr_tf, tf_train_labels : train_labels, keep_prob_s: keep_prob }
-        sess.run(train_step, feed_dict={xs: tf_train_new, ys: y, keep_prob: 0.7})
-        loss = sess.run(cross_entropy, feed_dict={xs: tf_train_new, ys: y, keep_prob: 1.0})
+        summary_t, _, loss = sess.run([summary_op, train_step, cross_entropy], feed_dict={xs: train_dataset, ys: train_labels, keep_prob: 0.7})
+        # summary_t, _, loss = sess.run([summary_op, train_step, cross_entropy], feed_dict={xs: tf_train_new, ys: y, keep_prob: 0.7})
+        # loss = sess.run(cross_entropy, feed_dict={xs: tf_train_new, ys: y, keep_prob: 1.0})
         # 输出loss值
-        if i % 100 == 0:
+        if i % 50 == 0:
             print(i, 'loss=', loss)
             # 每一百步保存
-            summary_str = sess.run(summary_op)
-            tra_summary_writer.add_summary(summary_str, i)
+            # summary_v, _, l, v_predictions = sess.run([summary_op, train_step, cross_entropy], feed_dict=feed_dict_v)
 
-            summary_str = sess.run(summary_op)
-            val_summary_writer.add_summary(summary_str, i)
+            summary_v, _, loss = sess.run([summary_op, train_step, cross_entropy],
+                                          feed_dict={xs: valid_dataset, ys: valid_labels, keep_prob: 0.7})
+            tra_summary_writer.add_summary(summary_t, i)
+            val_summary_writer.add_summary(summary_v, i)
+
+
             # 可视化
     prediction_value = sess.run(prediction, feed_dict={xs: tf_test, keep_prob: 1.0})
     #     print(prediction_value)
