@@ -171,7 +171,7 @@ def test_load():
     读取并打印VGG16的形状
     :return:
     """
-    data_path = './/vgg16_pretrain//vgg16.npy'
+    data_path = './vgg16/vgg16.npy'
 
     data_dict = np.load(data_path, encoding='latin1').item()
     keys = sorted(data_dict.keys())
