@@ -4,7 +4,6 @@ import os
 import numpy as np
 import tensorflow as tf
 import time
-import KaggleLearn.Tools.tools as tools
 
 VGG_MEAN = [103.939, 116.779, 123.68]
 
@@ -97,8 +96,8 @@ class Vgg16:
             bias = tf.nn.bias_add(conv, conv_biases)
 
             relu = tf.nn.relu(bias)
-            # print("name=", name)
-            # print("relu", relu.shape)
+            print("name=", name)
+            print("relu", relu.shape)
             return relu
 
     def fc_layer(self, bottom, name):
@@ -108,23 +107,22 @@ class Vgg16:
             for d in shape[1:]:
                 dim *= d
             x = tf.reshape(bottom, [-1, dim])
-            # print("x=", x.shape)
+            print("x=", x.shape)
             weights = self.get_fc_weight(name)
             biases = self.get_bias(name)
 
+            if name == "fc8":
+                w8 = tf.reshape(weights, [2, 4])
 
-
-            # print("weights=", weights.shape)
-            # print("weights=", weights)
-            # print("biases=", biases.shape)
-            # print("biases=", biases)
+            print("weights=", weights.shape)
+            print("weights=", weights)
+            print("biases=", biases.shape)
+            print("biases=", biases)
             # Fully connected layer. Note that the '+' operation automatically
             # broadcasts the biases.
             fc = tf.nn.bias_add(tf.matmul(x, weights), biases)
-            # print("name=", name)
-            # print("shape", fc.shape)
-            # if name == "fc8":
-            #     fc = tools.FC_layer('fc8', x, out_nodes=2)
+            print("name=", name)
+            print("shape", fc.shape)
             return fc
 
     def get_conv_filter(self, name):

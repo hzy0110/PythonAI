@@ -9,7 +9,7 @@ BATCH_SIZE = 64
 CAPACITY = 256
 IMG_W = 208
 IMG_H = 208
-N_CLASSES = 2
+N_CLASSES = 1000
 learning_rate = 0.01
 MAX_STEP = 150
 IS_PRETRAIN = False
@@ -24,7 +24,7 @@ with tf.name_scope('input'):
     image_list, label_list = inputData.get_files(train_dir)
     # 转换数据文件
     image_batch, label_batch = inputData.get_batch(image_list, label_list, IMG_W, IMG_H, len(image_list), CAPACITY)
-    label_batch_reshape = tf.reshape(label_batch, [-1, 2])
+    label_batch_reshape = tf.reshape(label_batch, [-1, 1000])
     #
     # print(type(image_list[0]))
     # print(type(label_list[0]))
@@ -56,6 +56,7 @@ with tf.name_scope('input'):
 
     # 读取训练好的VGG16
     # tools.load_with_skip(pre_trained_weights, sess, ['fc8'])
+    tools.load(pre_trained_weights, sess)
 
     # 多线程
     coord = tf.train.Coordinator()
