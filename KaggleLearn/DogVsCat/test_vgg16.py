@@ -1,7 +1,7 @@
 import numpy as np
 import tensorflow as tf
 
-import KaggleLearn.DogVsCat.vgg16 as vgg16
+import KaggleLearn.DogVsCat.vgg161 as vgg16
 import KaggleLearn.DogVsCat.utils as utils
 import KaggleLearn.Tools.tools as tools
 img1 = utils.load_image("./test_data/tiger.jpeg")

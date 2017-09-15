@@ -1,5 +1,5 @@
 import tensorflow as tf
-import tools
+import KaggleLearn.Tools.tools as tools
 
 
 # %%
@@ -20,19 +20,21 @@ def VGG16(x, n_classes, is_pretrain=True):
     x = tools.conv('conv4_1', x, 512, kernel_size=[3, 3], stride=[1, 1, 1, 1], is_pretrain=is_pretrain)
     x = tools.conv('conv4_2', x, 512, kernel_size=[3, 3], stride=[1, 1, 1, 1], is_pretrain=is_pretrain)
     x = tools.conv('conv4_3', x, 512, kernel_size=[3, 3], stride=[1, 1, 1, 1], is_pretrain=is_pretrain)
-    x = tools.pool('pool3', x, kernel=[1, 2, 2, 1], stride=[1, 2, 2, 1], is_max_pool=True)
+    x = tools.pool('pool4', x, kernel=[1, 2, 2, 1], stride=[1, 2, 2, 1], is_max_pool=True)
 
     x = tools.conv('conv5_1', x, 512, kernel_size=[3, 3], stride=[1, 1, 1, 1], is_pretrain=is_pretrain)
     x = tools.conv('conv5_2', x, 512, kernel_size=[3, 3], stride=[1, 1, 1, 1], is_pretrain=is_pretrain)
     x = tools.conv('conv5_3', x, 512, kernel_size=[3, 3], stride=[1, 1, 1, 1], is_pretrain=is_pretrain)
-    x = tools.pool('pool3', x, kernel=[1, 2, 2, 1], stride=[1, 2, 2, 1], is_max_pool=True)
+    x = tools.pool('pool5', x, kernel=[1, 2, 2, 1], stride=[1, 2, 2, 1], is_max_pool=True)
 
     x = tools.FC_layer('fc6', x, out_nodes=4096)
-    x = tools.batch_norm(x)
+    x = tf.nn.relu(x)
+    # x = tools.batch_norm(x)
     x = tools.FC_layer('fc7', x, out_nodes=4096)
-    x = tools.batch_norm(x)
+    x = tf.nn.relu(x)
+    # x = tools.batch_norm(x)
     x = tools.FC_layer('fc8', x, out_nodes=n_classes)
-
+    x = tf.nn.softmax(x, name="prob")
     return x
 
 

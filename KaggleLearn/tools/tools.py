@@ -22,12 +22,10 @@ def conv(layer_name, x, out_channels, kernel_size=[3, 3], stride=[1, 1, 1, 1], i
     with tf.variable_scope(layer_name):
         w = tf.get_variable(name='weights',
                             trainable=is_pretrain,
-                            shape=[kernel_size[0], kernel_size[1], in_channels, out_channels],
-                            initializer=tf.contrib.layers.xavier_initializer())  # default is uniform distribution initialization
+                            shape=[kernel_size[0], kernel_size[1], in_channels, out_channels])  # default is uniform distribution initialization
         b = tf.get_variable(name='biases',
                             trainable=is_pretrain,
-                            shape=[out_channels],
-                            initializer=tf.constant_initializer(0.0))
+                            shape=[out_channels])
         x = tf.nn.conv2d(x, w, stride, padding='SAME', name='conv')
         x = tf.nn.bias_add(x, b, name='bias_add')
         x = tf.nn.relu(x, name='relu')
@@ -84,15 +82,13 @@ def FC_layer(layer_name, x, out_nodes):
 
     with tf.variable_scope(layer_name):
         w = tf.get_variable('weights',
-                            shape=[size, out_nodes],
-                            initializer=tf.contrib.layers.xavier_initializer())
+                            shape=[size, out_nodes])
         b = tf.get_variable('biases',
-                            shape=[out_nodes],
-                            initializer=tf.constant_initializer(0.0))
+                            shape=[out_nodes])
         flat_x = tf.reshape(x, [-1, size])  # flatten into 1D
 
         x = tf.nn.bias_add(tf.matmul(flat_x, w), b)
-        x = tf.nn.relu(x)
+        # x = tf.nn.relu(x)
         return x
 
 
@@ -162,7 +158,10 @@ def load(data_path, session):
     for key in keys:
         with tf.variable_scope(key, reuse=True):
             for subkey, data in zip(('weights', 'biases'), data_dict[key]):
+                xx1 = tf.get_variable(subkey)
                 session.run(tf.get_variable(subkey).assign(data))
+                xx2 = tf.get_variable(subkey)
+                a = 1
 
 
 # %%
@@ -197,7 +196,10 @@ def load_with_skip(data_path, session, skip_layer):
         if key not in skip_layer:
             with tf.variable_scope(key, reuse=True):
                 for subkey, data in zip(('weights', 'biases'), data_dict[key]):
+                    xx = tf.get_variable(subkey)
                     session.run(tf.get_variable(subkey).assign(data))
+
+
 
 
 # %%

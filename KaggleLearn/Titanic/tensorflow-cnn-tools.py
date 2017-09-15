@@ -13,7 +13,8 @@ from sklearn.feature_selection import SelectKBest, f_classif
 from sklearn import preprocessing
 from sklearn import model_selection
 import KaggleLearn.Titanic.testCnn as testCnn
-import KaggleLearn.tools.tools as tools
+import KaggleLearn.Titanic.VGG as VGG
+import KaggleLearn.Tools.tools as tools
 warnings.filterwarnings('ignore')
 # In[24]:
 
@@ -231,6 +232,10 @@ IS_PRETRAIN = True
 learning_rate = 0.01
 
 with graphCNN.as_default():
+    pre_trained_weights = './VGG16/vgg16.npy'
+    train_log_dir = './logs/train/'
+    val_log_dir = './logs/val/'
+
     # define placeholder for inputs to network
     xs = tf.placeholder(tf.float32, [None, 9])  # 原始数据的维度：9
     ys = tf.placeholder(tf.float32, [None, 2])  # 输出数据为维度：2
@@ -240,11 +245,7 @@ with graphCNN.as_default():
     x_image = tf.reshape(xs, [-1, 3, 3, 1])  # 原始数据9变成二维图片3*3
     logits = testCnn.TestCnn(x_image, N_CLASSES, IS_PRETRAIN)
 
-    # prediction = tf.nn.relu(tf.matmul(h_fc1_drop, W_fc2) + b_fc2)
     # 计算 predition与y 差距 所用方法很简单就是用 suare()平方,sum()求和,mean()平均值
-
-    # cross_entropy = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=ys, logits=logits))
-    # loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=ys, logits=logits))
 
     # print("loss=", loss)
     loss = tools.loss(logits=logits, labels=ys)
@@ -259,18 +260,20 @@ with graphCNN.as_default():
 # print("tf_labels.shape", tf_labels.shape)
 # print("y.shape", y.shape)
 
-print(type(tf_train_new))
-print(type(y))
+# print(type(tf_train_new))
+# print(type(y))
 
 
 with tf.Session(graph=graphCNN) as sess:
     sess.run(tf.global_variables_initializer())
     summary_op = tf.summary.merge_all()
-    train_log_dir = './logs/train/'
-    val_log_dir = './logs/val/'
+
+    # Tools.load(pre_trained_weights, sess)
 
     tra_summary_writer = tf.summary.FileWriter(train_log_dir, sess.graph)
     val_summary_writer = tf.summary.FileWriter(val_log_dir, sess.graph)
+
+    tools.print_all_variables()
 
     # 训练500次
     for i in range(500):
