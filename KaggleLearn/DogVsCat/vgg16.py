@@ -21,6 +21,7 @@ class vgg16:
         self.probs = tf.nn.softmax(self.fc3l)
         if weights is not None and sess is not None:
             self.load_weights(weights, sess)
+            # self.load_weights_npy(weights, sess)
 
     def convlayers(self):
         self.parameters = []
@@ -69,6 +70,13 @@ class vgg16:
             out = tf.nn.bias_add(conv, biases)
             self.conv2_1 = tf.nn.relu(out, name=scope)
             self.parameters += [kernel, biases]
+
+        # pool1
+        self.pool2 = tf.nn.max_pool(self.conv2_1,
+                                    ksize=[1, 2, 2, 1],
+                                    strides=[1, 2, 2, 1],
+                                    padding='SAME',
+                                    name='pool1')
 
         # conv2_2
         with tf.name_scope('conv2_2') as scope:
@@ -206,7 +214,7 @@ class vgg16:
                                     ksize=[1, 2, 2, 1],
                                     strides=[1, 2, 2, 1],
                                     padding='SAME',
-                                    name='pool4')
+                                    name='pool5')
 
     def fc_layers(self):
         # fc1
@@ -246,17 +254,36 @@ class vgg16:
     def load_weights(self, weight_file, sess):
         weights = np.load(weight_file)
         keys = sorted(weights.keys())
+        print("keys", keys)
         for i, k in enumerate(keys):
-            print(i, k, np.shape(weights[k]))
+            xxx = weights[k]
+            print("i,k,np.shape", i, k, np.shape(weights[k]))
+            x = self.parameters
             sess.run(self.parameters[i].assign(weights[k]))
 
+    def load_weights_npy(self, weight_file, sess):
+        weights = np.load(weight_file, encoding='latin1').item()
+        keys = sorted(weights.keys())
+        j = 0
+        print("keys", keys)
+        for i, k in enumerate(keys):
+            for subkey in (0, 1):
+                # xxx1 = weights[k][subkey]
+                # xxx2 = weights[k][subkey]
+                # print("xxx1.shape", xxx1.shape)
+                # print("xxx2.shape", xxx2.shape)
+                print("i,k，subkey,np.shape", j, k, subkey, np.shape(weights[k][subkey]))
+                # sess.run(self.parameters[j].assign(weights[k][subkey]))
+                sess.run(self.parameters[j].assign(weights[k][subkey]))
+                j += 1
 
 if __name__ == '__main__':
     sess = tf.Session()
     imgs = tf.placeholder(tf.float32, [None, 224, 224, 3])
     vgg = vgg16(imgs, './VGG16/vgg16_weights.npz', sess)
+    # vgg = vgg16(imgs, './VGG16/vgg16.npy', sess)
 
-    img1 = imread('./test_data/tiger.jpeg', mode='RGB')
+    img1 = imread('./data/train/cat.1.jpg', mode='RGB')
     img1 = imresize(img1, (224, 224))
 
     prob = sess.run(vgg.probs, feed_dict={vgg.imgs: [img1]})[0]

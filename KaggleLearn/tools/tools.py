@@ -11,7 +11,7 @@ def conv(layer_name, x, out_channels, kernel_size=[3, 3], stride=[1, 1, 1, 1], i
         out_channels: number of output channels (or comvolutional kernels)
         kernel_size: the size of convolutional kernel, VGG paper used: [3,3]
         stride: A list of ints. 1-D of length 4. VGG paper used: [1, 1, 1, 1]
-        is_pretrain: if load pretrained parameters, freeze all conv layers. 
+        is_pretrain: if load pretrained parameters, freeze all conv layers.
         Depending on different situations, you can just set part of conv layers to be freezed.
         the parameters of freezed layers will not change when training.
     Returns:
@@ -19,13 +19,16 @@ def conv(layer_name, x, out_channels, kernel_size=[3, 3], stride=[1, 1, 1, 1], i
     """
 
     in_channels = x.get_shape()[-1]
+    # print(type(in_channels))
     with tf.variable_scope(layer_name):
-        w = tf.get_variable(name='weights',
-                            trainable=is_pretrain,
-                            shape=[kernel_size[0], kernel_size[1], in_channels, out_channels])  # default is uniform distribution initialization
-        b = tf.get_variable(name='biases',
-                            trainable=is_pretrain,
-                            shape=[out_channels])
+        # w = tf.get_variable(name='weights',
+        # trainable=is_pretrain,
+        # shape=[kernel_size[0], kernel_size[1], in_channels, out_channels]) # default is uniform distribution initialization
+        w = tf.get_variable(name='weights', initializer=tf.truncated_normal([kernel_size[0], kernel_size[1], int(in_channels), out_channels], dtype=tf.float32, stddev=1e-1))
+        b = tf.get_variable(initializer=tf.constant(0.0, shape=[out_channels], dtype=tf.float32), trainable=is_pretrain, name='biases')
+        # b = tf.get_variable(name='biases',
+        #                     trainable=is_pretrain,
+        #                     shape=[out_channels])
         x = tf.nn.conv2d(x, w, stride, padding='SAME', name='conv')
         x = tf.nn.bias_add(x, b, name='bias_add')
         x = tf.nn.relu(x, name='relu')
@@ -81,12 +84,11 @@ def FC_layer(layer_name, x, out_nodes):
         size = shape[-1].value
 
     with tf.variable_scope(layer_name):
-        w = tf.get_variable('weights',
-                            shape=[size, out_nodes])
-        b = tf.get_variable('biases',
-                            shape=[out_nodes])
+        # w = tf.get_variable('weights', shape=[size, out_nodes])
+        w = tf.get_variable(initializer=tf.truncated_normal([size, out_nodes], dtype=tf.float32, stddev=1e-1), name='weights')
+        # b = tf.get_variable('biases', shape=[out_nodes])
+        b = tf.get_variable(initializer=tf.constant(1.0, shape=[out_nodes], dtype=tf.float32), trainable=True, name='biases')
         flat_x = tf.reshape(x, [-1, size])  # flatten into 1D
-
         x = tf.nn.bias_add(tf.matmul(flat_x, w), b)
         # x = tf.nn.relu(x)
         return x
@@ -111,7 +113,7 @@ def accuracy(logits, labels):
     """Evaluate the quality of the logits at predicting the label.
     Args:
     logits: Logits tensor, float - [batch_size, NUM_CLASSES].
-    labels: Labels tensor, 
+    labels: Labels tensor,
     """
     with tf.name_scope('accuracy') as scope:
         correct = tf.equal(tf.argmax(logits, 1), tf.argmax(labels, 1))
@@ -145,6 +147,47 @@ def optimize(loss, learning_rate, global_step):
 
 
 # %%
+def loadnpz(data_path, session):
+    """
+    读取保存的参数
+    :param data_path:
+    :param session:
+    :return:
+    """
+    data_dict = np.load(data_path)
+
+    keys = sorted(data_dict.keys())
+    for key in keys:
+        # print("key", key)
+        # print(type(key))
+        with tf.variable_scope(key[:-2], reuse=True):
+            # subkey = ""
+            # print("key[-1:]", key[-1:])
+            if key[-1:] is "W":
+                subkey = "weights"
+            else:
+                subkey = "biases"
+            # for subkey, data in zip(('weights', 'biases'), data_dict[key]):
+            # for subkey in zip(('weights', 'biases')):
+            xx1 = data_dict[key]
+            # xx2 = data
+            # print("key", key)
+            # print("subkey", subkey)
+            print("key, subkey, np.shape(data)=", key, subkey,  np.shape(data_dict[key]))
+            xx1 = tf.get_variable(subkey)
+            session.run(tf.get_variable(subkey).assign(data_dict[key]))
+                # xx2 = tf.get_variable(subkey)
+                # a = 1
+    # for i, k in enumerate(keys):
+    #     print("k=", k)
+    #     # print("np.shape(data_dict[k])=", np.shape(data_dict[k]))
+    #     xxx = data_dict[k]
+    #     print("type(data_dict[k])=", type(data_dict[k]))
+
+        # print("i,k,np.shape", i, k, np.shape(data_dict[k]))
+        # sess.run(self.parameters[i].assign(data_dict[k]))
+
+
 def load(data_path, session):
     """
     读取保存的参数
@@ -156,12 +199,25 @@ def load(data_path, session):
 
     keys = sorted(data_dict.keys())
     for key in keys:
+        # print("key", key)
         with tf.variable_scope(key, reuse=True):
             for subkey, data in zip(('weights', 'biases'), data_dict[key]):
-                xx1 = tf.get_variable(subkey)
+                xx1 = data_dict[key]
+                xx2 = data
+                print("subkey, key, np.shape(data)=", subkey, key, np.shape(data))
+                # xx1 = tf.get_variable(subkey)
+                print("subkey", subkey)
                 session.run(tf.get_variable(subkey).assign(data))
-                xx2 = tf.get_variable(subkey)
-                a = 1
+                # xx2 = tf.get_variable(subkey)
+                # a = 1
+                # for i, k in enumerate(keys):
+                #     print("k=", k)
+                #     # print("np.shape(data_dict[k])=", np.shape(data_dict[k]))
+                #     xxx = data_dict[k]
+                #     print("type(data_dict[k])=", type(data_dict[k]))
+
+                # print("i,k,np.shape", i, k, np.shape(data_dict[k]))
+                # sess.run(self.parameters[i].assign(data_dict[k]))
 
 
 # %%
@@ -198,9 +254,6 @@ def load_with_skip(data_path, session, skip_layer):
                 for subkey, data in zip(('weights', 'biases'), data_dict[key]):
                     xx = tf.get_variable(subkey)
                     session.run(tf.get_variable(subkey).assign(data))
-
-
-
 
 # %%
 def print_all_variables(train_only=True):
