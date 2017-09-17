@@ -204,9 +204,9 @@ def load(data_path, session):
             for subkey, data in zip(('weights', 'biases'), data_dict[key]):
                 xx1 = data_dict[key]
                 xx2 = data
-                print("subkey, key, np.shape(data)=", subkey, key, np.shape(data))
+                # print("subkey, key, np.shape(data)=", subkey, key, np.shape(data))
                 # xx1 = tf.get_variable(subkey)
-                print("subkey", subkey)
+                # print("subkey", subkey)
                 session.run(tf.get_variable(subkey).assign(data))
                 # xx2 = tf.get_variable(subkey)
                 # a = 1

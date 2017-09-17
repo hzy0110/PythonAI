@@ -17,11 +17,14 @@ IMG_H = 224
 BATCH_SIZE = 64
 CAPACITY = 256
 N_CLASSES = 1000
+print("img1.shape", img1.shape)
 batch1 = img1.reshape((1, 224, 224, 3))
 batch2 = img2.reshape((1, 224, 224, 3))
 
 batch = np.concatenate((batch1, batch2), 0)
-
+print("batch1.shape", batch1.shape)
+print("batch2.shape", batch2.shape)
+print("batch.shape", batch.shape)
 # with tf.Session(config=tf.ConfigProto(gpu_options=(tf.GPUOptions(per_process_gpu_memory_fraction=0.7)))) as sess:
 with tf.device('/cpu:0'):
     with tf.Session() as sess:

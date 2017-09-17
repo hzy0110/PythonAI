@@ -46,20 +46,28 @@ with tf.name_scope('input'):
 
     #############分割############
 
-    # img1 = utils.load_image("./data/train/cat.1.jpg")
-    img1 = imread('./data/train/cat.1.jpg', mode='RGB')
-    img1 = imresize(img1, (224, 224))
+    img11 = utils.load_image("./data/train/cat.1.jpg")
+    # print("img11.type", type(img11))
     # img2 = utils.load_image("./data/train/cat.1.jpg")
 
     # batch1 = img1.reshape((1, 224, 224, 3))
     # batch2 = img2.reshape((1, 224, 224, 3))
 
     # batch = np.concatenate((batch1, batch2), 0)
-
+    img1 = imread('./data/train/cat.1.jpg', mode='RGB')
+    img2 = imread('./test_data/tiger.jpeg', mode='RGB')
+    img1 = imresize(img1, (224, 224))
+    img2 = imresize(img2, (224, 224))
+    img1 = img1.reshape((1, 224, 224, 3))
+    img2 = img2.reshape((1, 224, 224, 3))
+    batch = np.concatenate((img1, img2), 0)
+    # print("img1.shape", img1.shape)
+    # print("img1.type", type(img1))
+    # print("img2.shape", img2.shape)
+    # print("img2.type", type(img2))
+    # print("batch.shape", batch.shape)
     images = tf.placeholder("float", [None, 224, 224, 3])
-    # imgs = tf.placeholder(tf.float32, [None, 224, 224, 3])
-    # mean = tf.constant([123.68, 116.779, 103.939], dtype=tf.float32, shape=[1, 1, 1, 3], name='img_mean')
-    # images = images - mean
+
     logits = VGG.convlayers(images)
 
     init = tf.global_variables_initializer()
@@ -77,13 +85,13 @@ with tf.name_scope('input'):
     # for p in preds:
     #     print(class_names[p], prob[p])
 
-    prob = sess.run(logits, feed_dict={images: [img1]})
-    print(prob)
-    print("prob.shape", prob.shape)
-    print("prob.type", type(prob[0]))
+    prob = sess.run(logits, feed_dict={images: batch})
+    # print(prob)
+    # print("prob.shape", prob.shape)
+    # print("prob.type", type(prob[0]))
     # print(prob[0][1])
     utils.print_prob(prob[0], './VGG16/synset.txt')
-
+    utils.print_prob(prob[1], './VGG16/synset.txt')
     # tools.print_all_variables()
     end = time.time()
     print("time=", end - start)
