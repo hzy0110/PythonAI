@@ -1,0 +1,13 @@
+#单个 for 循环可用
+# 对于Selector类型的对象，并不能使用extract_first()方法，而使用get()可以
+# for d in datas1_thead:
+#     print(d.extract())
+#     print(d.get())
+#     print(d.getall())
+    # print(type(d))
+
+    SelectorList 可用
+            get = datas1_thead.get()
+        getall = datas1_thead.getall()
+        extract = datas1_thead.extract()
+        extract_first = datas1_thead.extract_first()
