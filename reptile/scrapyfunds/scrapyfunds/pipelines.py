@@ -11,6 +11,18 @@ import numpy as np
 
 class ScrapyfundsPipeline(object):
     def process_item(self, item, spider):
+        if spider.name == 'FundsGrandTotalReportPer':
+            if not item['fund_grant_total_pd'].empty:
+                fund_grant_total_pd = item['fund_grant_total_pd']
+                code = item['code']
+                # if not os.path.exists('./data/fund/fund_grant_total_all_pd.csv'):
+                fund_grant_total_pd.to_csv('./data/fund/gt/' + code + '.csv', encoding='utf_8_sig', index=False)
+                # else:
+                #     fund_grant_total_history_pd = pd.read_csv('./data/fund/fund_grant_total_all_pd.csv', low_memory=False)
+                #     fund_grant_total_history_pd = pd.merge(fund_grant_total_history_pd, fund_grant_total_pd, how='left',
+                #                                            on='日期')
+                #     fund_grant_total_history_pd.to_csv('./data/fund/fund_grant_total_all_pd.csv', encoding='utf_8_sig', index=False)
+
         if spider.name == 'FundsJAJXRating':
             if not item['fund_jajx_rating_pd'].empty:
                 fund_jajx_rating_pd = item['fund_jajx_rating_pd']
@@ -18,7 +30,7 @@ class ScrapyfundsPipeline(object):
                     fund_jajx_rating_pd.to_csv('./data/fund/fund_jajx_rating_pd.csv', encoding='utf_8_sig', index=False)
                 else:
                     fund_jajx_rating_pd.to_csv('./data/fund/fund_jajx_rating_pd.csv', mode='a', header=False,
-                                           encoding='utf_8_sig', index=False)
+                                               encoding='utf_8_sig', index=False)
 
         if spider.name == 'FundsZSZQRating':
             if not item['fund_zszq_rating_pd'].empty:
@@ -27,7 +39,7 @@ class ScrapyfundsPipeline(object):
                     fund_zszq_rating_pd.to_csv('./data/fund/fund_zszq_rating_pd.csv', encoding='utf_8_sig', index=False)
                 else:
                     fund_zszq_rating_pd.to_csv('./data/fund/fund_zszq_rating_pd.csv', mode='a', header=False,
-                                           encoding='utf_8_sig', index=False)
+                                               encoding='utf_8_sig', index=False)
 
         if spider.name == 'FundsSHZQRating':
             if not item['fund_shzq_rating_pd'].empty:
@@ -36,7 +48,7 @@ class ScrapyfundsPipeline(object):
                     fund_rating_pd.to_csv('./data/fund/fund_shzq_rating_pd.csv', encoding='utf_8_sig', index=False)
                 else:
                     fund_rating_pd.to_csv('./data/fund/fund_shzq_rating_pd.csv', mode='a', header=False,
-                                           encoding='utf_8_sig', index=False)
+                                          encoding='utf_8_sig', index=False)
 
         if spider.name == 'FundsRating':
             if not item['fund_rating_pd'].empty:
@@ -45,8 +57,7 @@ class ScrapyfundsPipeline(object):
                     fund_rating_pd.to_csv('./data/fund/fund_rating_pd.csv', encoding='utf_8_sig', index=False)
                 else:
                     fund_rating_pd.to_csv('./data/fund/fund_rating_pd.csv', mode='a', header=False,
-                                           encoding='utf_8_sig', index=False)
-
+                                          encoding='utf_8_sig', index=False)
 
         if spider.name == 'FundsManageFeatureData':
             if not item['feature_data_pd'].empty:

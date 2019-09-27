@@ -12,6 +12,7 @@ class ScrapyfundsItem(scrapy.Item):
     # define the fields for your item here like:
     # name = scrapy.Field()
     feature_data_pd = scrapy.Field()  # 特色数据
+    fund_grant_total_pd = scrapy.Field()  # 特色数据
     fund_rating_pd = scrapy.Field()  # 特色数据
     fund_shzq_rating_pd = scrapy.Field()  # 特色数据
     fund_zszq_rating_pd = scrapy.Field()  # 特色数据
