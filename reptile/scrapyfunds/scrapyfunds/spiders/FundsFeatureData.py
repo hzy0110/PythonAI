@@ -11,7 +11,7 @@ import numpy as np
 
 
 class FundsSpider(scrapy.Spider):
-    # 抓取基金特色数据
+    # 抓取基金特色数据，季度级
     name = 'FundsManageFeatureData'  # 唯一，用于区别Spider。运行爬虫时，就要使用该名字
     allowed_domains = ['fund.eastmoney.com']  # 允许访问的域
 

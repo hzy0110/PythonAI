@@ -11,7 +11,7 @@ import numpy as np
 
 
 class FundsSpider(scrapy.Spider):
-    # 抓取基金经理同类平均和同类排名
+    # 抓取基金经理同类平均和同类排名，更换经理抓，起码月级吧
     name = 'FundsManageSimilar'  # 唯一，用于区别Spider。运行爬虫时，就要使用该名字
     allowed_domains = ['fund.eastmoney.com']  # 允许访问的域
 

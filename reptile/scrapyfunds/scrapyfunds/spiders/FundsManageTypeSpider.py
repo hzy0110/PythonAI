@@ -8,7 +8,7 @@ from scrapyfunds.items import ScrapyfundsItem
 
 
 class FundsSpider(scrapy.Spider):
-    # 抓取基金经理历任和现任的基金信息
+    # 抓取基金经理历任和现任的基金信息，更换经理抓，起码月级吧
     name = 'fundsManageTypeList'  # 唯一，用于区别Spider。运行爬虫时，就要使用该名字
     allowed_domains = ['fund.eastmoney.com']  # 允许访问的域
 
