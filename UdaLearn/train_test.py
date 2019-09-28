@@ -18,7 +18,7 @@ import tensorflow as tf
 
 
 # print("111111111")
-# print(type(mnist.train))
+# print(type(mnist.train)) 
 # x = mnist.train
 # x = mnist.train
 

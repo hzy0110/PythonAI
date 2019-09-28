@@ -1,7 +1,7 @@
 import tensorflow as tf
 import numpy as np
 import os
-
+from scipy.misc import imread, imresize
 
 def get_files(file_dir):
     """
@@ -37,6 +37,15 @@ def get_files(file_dir):
 
     return image_list, label_list
 
+
+def get_files_Test(file_dir):
+    test_file = []
+    for file in os.listdir(file_dir):
+        img = imread(file_dir + file, mode='RGB')
+        img = imresize(img, (224, 224))
+        img.reshape((1, 224, 224, 3))
+        test_file.append(img)
+    return test_file
 
 # %%
 

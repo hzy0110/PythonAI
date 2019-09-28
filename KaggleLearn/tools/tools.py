@@ -173,7 +173,7 @@ def loadnpz(data_path, session):
             # xx2 = data
             # print("key", key)
             # print("subkey", subkey)
-            print("key, subkey, np.shape(data)=", key, subkey,  np.shape(data_dict[key]))
+            # print("key, subkey, np.shape(data)=", key, subkey,  np.shape(data_dict[key]))
             xx1 = tf.get_variable(subkey)
             session.run(tf.get_variable(subkey).assign(data_dict[key]))
                 # xx2 = tf.get_variable(subkey)
@@ -252,8 +252,8 @@ def load_with_skip(data_path, session, skip_layer):
         if key not in skip_layer:
             with tf.variable_scope(key, reuse=True):
                 for subkey, data in zip(('weights', 'biases'), data_dict[key]):
-                    xx = tf.get_variable(subkey)
                     session.run(tf.get_variable(subkey).assign(data))
+
 
 # %%
 def print_all_variables(train_only=True):

@@ -1,7 +1,10 @@
 import kNN
+import tensorflow as tf
 
-group, labels = kNN.createDataSet()
-print(group)
-print(labels)
+tf.version
 
-print(kNN.classify0([0,0], group, labels, 3))
+# group, labels = kNN.createDataSet()
+# print(group)
+# print(labels)
+#
+# print(kNN.classify0([0,0], group, labels, 3))

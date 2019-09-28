@@ -31,7 +31,7 @@ W = tf.Variable(np.random.randn(), name="weight", dtype=tf.float32)
 b = tf.Variable(np.random.randn(), name="bias", dtype=tf.float32)
 
 # 定义模型
-pred = tf.add(tf.mul(W, X), b)
+pred = tf.add(tf.multiply(W, X), b)
 # 定义损失函数
 cost = tf.reduce_sum(tf.pow(pred-Y, 2)) / (2 * n_samples)
 # 使用Adam算法，至于为什么不使用一般的梯度下降算法，一会说

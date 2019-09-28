@@ -99,3 +99,9 @@ ENV/
 
 # mypy
 .mypy_cache/
+*.json
+天天基金解析
+字段解析
+*.xlsx
+*.xls
+Data/genki4k
