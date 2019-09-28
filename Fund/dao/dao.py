@@ -1,4 +1,4 @@
-from dao import Conn
+from dao.conn import Conn
 
 
 class Dao:
@@ -37,7 +37,7 @@ class Dao:
         fund_history_pd.insert(0, where_columns, where_value)
         fund_history_pd.fillna(0, inplace=True)
         fund_history_pd.replace(to_replace=r'^\s*$', value=0, regex=True, inplace=True)
-        sql_str = self.get_insert_update_sql(fund_history_pd, 'fund_history', where_columns, where_value)
+        sql_str = self.get_insert_update_sql(fund_history_pd, 'fund_history')
         # print(sql_str)
         exec_info = fund_history_pd.apply(
             lambda x: self.execute_by_lambda_double_value_list(self.engineFunds.connect(), sql_str, x.tolist()), axis=1)
@@ -47,6 +47,8 @@ class Dao:
 
     def save_manager_info(self, manager_info_pd):
         # insert,update 模式下，需要插入where 信息
+        # print(manager_info_pd)
+        # print(manager_info_pd.shape)
         manager_info_pd.fillna(0, inplace=True)
         manager_info_pd.replace(to_replace=r'^\s*$', value=0, regex=True, inplace=True)
         sql_str = self.get_insert_update_sql(manager_info_pd, 'manager_info')

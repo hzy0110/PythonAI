@@ -1,8 +1,8 @@
 # from fund.tools.reptile import Reptile
 # from fund.tools.tool import Tool
 # from fund.dao.dao import Dao
-from manager.get_manager import Manager
-
+from manager.dispose_manager import Manager
+from fund.dispose_fund import Fund
 # def main():
 
 # allCodeType = Reptile().get_all_code_type()
@@ -52,6 +52,9 @@ from manager.get_manager import Manager
 #         sys.stdout.flush()
 #     # Dao().test()
 #
-Manager.run_menager()
+# Manager().run_menager()
+Fund().run_reptile_pinzhongdata_multiple()
+# Fund().run_reptile_pinzhongdata_test()
+# Fund().run_reptile_pinzhongdata_single()
 # if __name__ == "__main__":
 #     main()

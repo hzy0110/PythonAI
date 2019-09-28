@@ -10,4 +10,4 @@ class Conn:
         self.connModel = "mysql+pymysql"
 
     def getEngineFunds(self):
-        return create_engine(self.connModel + "://hzy:&807610Mysql@127.0.0.1:3306/fund?charset=utf8", max_overflow=5)
+        return create_engine(self.connModel + "://hzy:&807610Mysql@127.0.0.1:3306/funds?charset=utf8", max_overflow=5)

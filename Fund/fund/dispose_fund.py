@@ -1,43 +1,81 @@
 from tools.reptile import Reptile
 from tools.tool import Tool
-from dao import Dao
+from dao.dao import Dao
 import time
 import sys
-from multiprocessing import Process
+from multiprocessing import Process, Queue
 
 
 class Fund:
     def __init__(self):
         pass
 
-    def all_code_m(self, allCode, allType):
+    def all_code_m(self, allCode, allType, error_queue):
         for i in range(len(allCode)):
-            code, ishb, basic_info_pd, funds = Reptile().get_pingzhongdata(allCode[i], allType[i])
-            if ishb is not None:
-                if ishb:
-                    fund_wide_pd, rateInSimilar_pd, grandTotal_pd, worth_pd, current_fund_manager_pd = Tool().get_hb_pingzhongdata_2_df(
-                        basic_info_pd, funds)
-                else:
-                    fund_wide_pd, rateInSimilar_pd, grandTotal_pd, worth_pd, current_fund_manager_pd = Tool().get_pingzhongdata_2_df(
-                        basic_info_pd, funds)
-                # print(code, '用时2', end)
-                Dao().save_fund_info(fund_wide_pd, 'fund_code', int(code))
-                # print(code, '用时3', end)
-                if not rateInSimilar_pd.empty:
-                    Dao().save_fund_history(rateInSimilar_pd, 'fund_code', int(code))
-                    pass
-                if not grandTotal_pd.empty:
-                    Dao().save_fund_history(grandTotal_pd, 'fund_code', int(code))
-                    pass
-                if not worth_pd.empty:
-                    Dao().save_fund_history(worth_pd, 'fund_code', int(code))
-                    pass
-                sys.stdout.flush()
+            if i % 200 == 0:
+                print('进度:', i)
+            try:
+                code, ishb, basic_info_pd, funds = Reptile().get_pingzhongdata(allCode[i], allType[i])
+                if ishb is not None:
+                    if ishb:
+                        fund_wide_pd, rateInSimilar_pd, grandTotal_pd, worth_pd, current_fund_manager_pd = Tool().get_hb_pingzhongdata_2_df(
+                            basic_info_pd, funds)
+                    else:
+                        fund_wide_pd, rateInSimilar_pd, grandTotal_pd, worth_pd, current_fund_manager_pd = Tool().get_pingzhongdata_2_df(
+                            basic_info_pd, funds)
+                    # print(code, '用时2', end)
+                    Dao().save_fund_info(fund_wide_pd, 'fund_code', int(code))
+                    # print(code, '用时3', end)
+
+                    if not rateInSimilar_pd.empty:
+                        Dao().save_fund_history(rateInSimilar_pd, 'fund_code', int(code))
+                        pass
+                    if not grandTotal_pd.empty:
+                        Dao().save_fund_history(grandTotal_pd, 'fund_code', int(code))
+                        pass
+                    if not worth_pd.empty:
+                        Dao().save_fund_history(worth_pd, 'fund_code', int(code))
+                        pass
+                    if not current_fund_manager_pd.empty:
+                        Dao().save_manager_info(current_fund_manager_pd)
+                    error_queue.put(None)
+            except Exception as e:
+                print("错误 code", code)
+                error_queue.put(e, code)
+
+                # sys.stdout.flush()
         print("end")
+
+    def single_code(self, code_s, type_s):
+        code, ishb, basic_info_pd, funds = Reptile().get_pingzhongdata(code_s, type_s)
+        if ishb is not None:
+            if ishb:
+                fund_wide_pd, rateInSimilar_pd, grandTotal_pd, worth_pd, current_fund_manager_pd = Tool().get_hb_pingzhongdata_2_df(
+                    basic_info_pd, funds)
+            else:
+                fund_wide_pd, rateInSimilar_pd, grandTotal_pd, worth_pd, current_fund_manager_pd = Tool().get_pingzhongdata_2_df(
+                    basic_info_pd, funds)
+            # print(code, '用时2', end)
+            Dao().save_fund_info(fund_wide_pd, 'fund_code', int(code))
+            # print(code, '用时3', end)
+
+            if not rateInSimilar_pd.empty:
+                Dao().save_fund_history(rateInSimilar_pd, 'fund_code', int(code))
+                pass
+            if not grandTotal_pd.empty:
+                Dao().save_fund_history(grandTotal_pd, 'fund_code', int(code))
+                pass
+            if not worth_pd.empty:
+                Dao().save_fund_history(worth_pd, 'fund_code', int(code))
+                pass
+            if not current_fund_manager_pd.empty:
+                Dao().save_manager_info(current_fund_manager_pd)
+
+            # sys.stdout.flush()
 
     def run_reptile_pinzhongdata_multiple(self):
         allCodeType = Reptile().get_all_code_type()
-
+        error_queue = Queue()  # 实现子进程和主进程之间的报错信息通信
         # allCode1 = allCodeType.loc[0:2, 'code'].values.tolist()
         # allType1 = allCodeType.loc[0:2, 'type'].values.tolist()
         # allCode2 = allCodeType.loc[2:4, 'code'].values.tolist()
@@ -73,14 +111,15 @@ class Fund:
         allType8 = allCodeType.loc[8000:, 'type'].values.tolist()
 
         start = time.time()
-        p1 = Process(target=self.all_code_m, args=(allCode1, allType1))
-        p2 = Process(target=self.all_code_m, args=(allCode2, allType2))
-        p3 = Process(target=self.all_code_m, args=(allCode3, allType3))
-        p4 = Process(target=self.all_code_m, args=(allCode4, allType4))
-        p5 = Process(target=self.all_code_m, args=(allCode5, allType5))
-        p6 = Process(target=self.all_code_m, args=(allCode6, allType6))
-        p7 = Process(target=self.all_code_m, args=(allCode7, allType7))
-        p8 = Process(target=self.all_code_m, args=(allCode8, allType8))
+
+        p1 = Process(target=self.all_code_m, args=(allCode1, allType1, error_queue))
+        p2 = Process(target=self.all_code_m, args=(allCode2, allType2, error_queue))
+        p3 = Process(target=self.all_code_m, args=(allCode3, allType3, error_queue))
+        p4 = Process(target=self.all_code_m, args=(allCode4, allType4, error_queue))
+        p5 = Process(target=self.all_code_m, args=(allCode5, allType5, error_queue))
+        p6 = Process(target=self.all_code_m, args=(allCode6, allType6, error_queue))
+        p7 = Process(target=self.all_code_m, args=(allCode7, allType7, error_queue))
+        p8 = Process(target=self.all_code_m, args=(allCode8, allType8, error_queue))
         print('等待所有子进程完成。')
         p1.start()
         p2.start()
@@ -90,6 +129,11 @@ class Fund:
         p6.start()
         p7.start()
         p8.start()
+
+        error_flag = error_queue.get()
+        if error_flag is not None:
+            print("error_flag,", error_flag)
+
         p1.join()
         p2.join()
         p3.join()
@@ -100,3 +144,14 @@ class Fund:
         p8.join()
         end = time.time()
         print("总共用时{}秒".format((end - start)))
+
+    def run_reptile_pinzhongdata_single(self):
+        error_queue = Queue()
+        allCodeType = Reptile().get_all_code_type()
+
+        allCode1 = allCodeType.loc[1002:1005, 'code'].values.tolist()
+        allType1 = allCodeType.loc[1002:1005, 'type'].values.tolist()
+        self.all_code_m(allCode1, allType1, error_queue)
+
+    def run_reptile_pinzhongdata_test(self):
+        self.single_code('485018', '混合型')

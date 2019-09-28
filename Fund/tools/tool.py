@@ -143,7 +143,7 @@ class Tool:
         performanceEvaluationDF['manage_scale_score'] = self.replace_none(
             performanceEvaluationDF['manage_scale_score'][0])
 
-        # 现任基金经理 已平,但有两行
+        # 现任基金经理
         power_pd = pd.DataFrame()
         profit_pd = pd.DataFrame()
         currentFundManagerDF = pd.DataFrame(
@@ -170,8 +170,51 @@ class Tool:
 
         currentFundManagerDF = pd.concat([currentFundManagerDF, power_pd], axis=1)
         currentFundManagerDF = pd.concat([currentFundManagerDF, profit_pd], axis=1)
+        col_list = currentFundManagerDF.columns.tolist()
+        col_new_list = []
+        for c_name in col_list:
+            # print('c_name', str(c_name), type(str(c_name)))
+            c_name_new = str(c_name).replace('(', '').replace(')', '').replace(',', '').replace('\'', '')
+            col_new_list.append(c_name_new)
+        # print('col_new_list', col_new_list)
+        currentFundManagerDF.columns = col_new_list
+        currentFundManagerDF = currentFundManagerDF.drop(['姓名', '工作时间', '截止日期', '任期收益'], axis=1)
         currentFundManagerDF = currentFundManagerDF.drop(['评分', '收益能力'], axis=1)
-        currentFundManagerDF = pd.DataFrame([currentFundManagerDF.T])
+        # print('currentFundManagerDF', currentFundManagerDF.T)
+        # print('currentFundManagerDF', currentFundManagerDF.columns.tolist())
+        # print('currentFundManagerDF', currentFundManagerDF.shape)
+        if currentFundManagerDF.shape[1] == 13:
+            currentFundManagerDF.columns = ['manager_code', 'manager_star', 'manager_fund_num', 'manager_avg_score',
+                                            'manager_influence_score', 'manager_resist_risk_score',
+                                            'manager_choice_score', 'manager_report_score', 'manager_stable_score',
+                                            'manager_manage_scale_score', 'manager_experience_score',
+                                            'manager_similar_mean_score', 'manager_hs300_score']
+        elif currentFundManagerDF.shape[1] == 14:
+            currentFundManagerDF.columns = ['manager_code', 'manager_star', 'manager_fund_num', 'manager_avg_score',
+                                            'manager_resist_risk_score',
+                                            'manager_choice_score', 'manager_report_score', 'manager_stable_score',
+                                            'manager_manage_scale_score', 'manager_experience_score',
+                                            'manager_over_earn_score ',
+                                            'manager_tracking_error_score', 'manager_similar_mean_score',
+                                            'manager_hs300_score']
+        elif currentFundManagerDF.shape[1] == 12:
+            currentFundManagerDF.columns = ['manager_code', 'manager_star', 'manager_fund_num', 'manager_avg_score',
+                                            'manager_resist_risk_score',
+                                            'manager_choice_score', 'manager_report_score', 'manager_stable_score',
+                                            'manager_manage_scale_score', 'manager_experience_score',
+                                            'manager_similar_mean_score', 'manager_hs300_score']
+        elif currentFundManagerDF.shape[1] == 10:
+            currentFundManagerDF.columns = ['manager_code', 'manager_star', 'manager_fund_num', 'manager_avg_score',
+                                            'manager_experience_score',
+                                            'manager_report_score', 'manager_resist_risk_score', 'manager_stable_score',
+                                            'manager_choice_score', 'manager_similar_mean_score']
+        else:
+            currentFundManagerDF.columns = ['manager_code', 'manager_star', 'manager_fund_num', 'manager_avg_score',
+                                            'manager_experience_score',
+                                            'manager_report_score', 'manager_resist_risk_score', 'manager_stable_score',
+                                            'manager_choice_score', 'manager_similar_mean_score', 'manager_hs300_score']
+        # print('currentFundManagerDF', currentFundManagerDF.T)
+
         #     print(currentFundManagerDF)
         #     print(currentFundManagerDF.shape)
         #     print(currentFundManagerDF.info())
@@ -246,7 +289,8 @@ class Tool:
             if grandTotal_pd.shape[1] == 3:
                 grandTotal_pd.columns = ['trade_timestamp', 'hs300_grand_total', 'self_grand_total']
             else:
-                grandTotal_pd.columns = ['trade_timestamp', 'hs300_grand_total', 'similar_mean_grand_total', 'self_grand_total']
+                grandTotal_pd.columns = ['trade_timestamp', 'hs300_grand_total', 'similar_mean_grand_total',
+                                         'self_grand_total']
         # grandTotal_pd = grandTotal_pd.T
         # grandTotal_pd.insert(0, 'code', code)
 
@@ -359,8 +403,50 @@ class Tool:
 
         currentFundManagerDF = pd.concat([currentFundManagerDF, power_pd], axis=1)
         currentFundManagerDF = pd.concat([currentFundManagerDF, profit_pd], axis=1)
+        col_list = currentFundManagerDF.columns.tolist()
+        col_new_list = []
+        for c_name in col_list:
+            # print('c_name', str(c_name), type(str(c_name)))
+            c_name_new = str(c_name).replace('(', '').replace(')', '').replace(',', '').replace('\'', '')
+            col_new_list.append(c_name_new)
+        # print('col_new_list', col_new_list)
+        currentFundManagerDF.columns = col_new_list
+        currentFundManagerDF = currentFundManagerDF.drop(['姓名', '工作时间', '截止日期', '任期收益'], axis=1)
         currentFundManagerDF = currentFundManagerDF.drop(['评分', '收益能力'], axis=1)
-        currentFundManagerDF = pd.DataFrame([currentFundManagerDF.T])
+        # print('currentFundManagerDF', currentFundManagerDF.T)
+        # print('currentFundManagerDF', currentFundManagerDF.columns.tolist())
+        if currentFundManagerDF.shape[1] == 13:
+            currentFundManagerDF.columns = ['manager_code', 'manager_star', 'manager_fund_num', 'manager_avg_score',
+                                            'manager_influence_score', 'manager_resist_risk_score',
+                                            'manager_choice_score', 'manager_report_score', 'manager_stable_score',
+                                            'manager_experience_score',
+                                            'manager_similar_mean_score', 'manager_hs300_score']
+        elif currentFundManagerDF.shape[1] == 14:
+            currentFundManagerDF.columns = ['manager_code', 'manager_star', 'manager_fund_num', 'manager_avg_score',
+                                            'manager_resist_risk_score',
+                                            'manager_choice_score', 'manager_report_score', 'manager_stable_score',
+                                            'manager_manage_scale_score', 'manager_experience_score',
+                                            'manager_over_earn_score ',
+                                            'manager_tracking_error_score', 'manager_similar_mean_score',
+                                            'manager_hs300_score']
+
+        elif currentFundManagerDF.shape[1] == 12:
+            currentFundManagerDF.columns = ['manager_code', 'manager_star', 'manager_fund_num', 'manager_avg_score',
+                                            'manager_resist_risk_score', 'manager_choice_score', 'manager_report_score',
+                                            'manager_stable_score', 'manager_manage_scale_score',
+                                            'manager_experience_score',
+                                            'manager_similar_mean_score', 'manager_hs300_score']
+        elif currentFundManagerDF.shape[1] == 10:
+            currentFundManagerDF.columns = ['manager_code', 'manager_star', 'manager_fund_num', 'manager_avg_score',
+                                            'manager_experience_score',
+                                            'manager_report_score', 'manager_influence_score', 'manager_stable_score',
+                                            'manager_choice_score', 'manager_similar_mean_score']
+        else:
+            currentFundManagerDF.columns = ['manager_code', 'manager_star', 'manager_fund_num', 'manager_avg_score',
+                                            'manager_experience_score',
+                                            'manager_report_score', 'manager_resist_risk_score', 'manager_stable_score',
+                                            'manager_choice_score', 'manager_similar_mean_score', 'manager_hs300_score']
+
         #     print(currentFundManagerDF)
         #     print(currentFundManagerDF.shape)
         #     print(currentFundManagerDF.info())
@@ -435,7 +521,8 @@ class Tool:
             if grandTotal_pd.shape[1] == 3:
                 grandTotal_pd.columns = ['trade_timestamp', 'hs300_grand_total', 'self_grand_total']
             else:
-                grandTotal_pd.columns = ['trade_timestamp', 'hs300_grand_total', 'similar_mean_grand_total', 'self_grand_total']
+                grandTotal_pd.columns = ['trade_timestamp', 'hs300_grand_total', 'similar_mean_grand_total',
+                                         'self_grand_total']
         # grandTotal_pd = grandTotal_pd.T
         # grandTotal_pd.insert(0, 'code', code)
 

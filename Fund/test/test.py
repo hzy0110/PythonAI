@@ -55,6 +55,10 @@ import pandas as pd
 # list1 = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 # print(list1[0:2])
 # print(list1[2:4])
-df = pd.DataFrame([[1, 2, 3], [4, 5, 6]], columns=['fund_code', 'fund_name', 'fund_type'])
-df = df.T
-print(df)
+# df = pd.DataFrame([[1, 2, 3], [4, 5, 6]], columns=['fund_code', 'fund_name', 'fund_type'])
+# df = pd.DataFrame([1, 2, 3], columns=['fund_code'])
+# df = df.T
+# print(df)
+i = 102
+if i % 100 == 0:
+    print("a")

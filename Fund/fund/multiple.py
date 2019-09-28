@@ -1,6 +1,6 @@
 from tools.reptile import Reptile
 from tools.tool import Tool
-from dao import Dao
+from dao.dao import Dao
 import time
 import sys
 from multiprocessing import Process
