@@ -1,4 +1,4 @@
-from fund.dao.conn import Conn
+from dao import Conn
 
 
 class Dao:

@@ -1,7 +1,6 @@
 import pandas as pd
-import numpy as np
-from fund.tools.tool import Tool
-from fund.tools.reptile import Reptile
+from tools.tool import Tool
+from tools.reptile import Reptile
 
 
 class Fund:

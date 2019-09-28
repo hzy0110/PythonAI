@@ -1,6 +1,5 @@
-from fund.tools.reptile import Reptile
-from fund.dao.dao import Dao
-import pandas as pd
+from tools.reptile import Reptile
+from dao import Dao
 
 
 class Manager:

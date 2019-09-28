@@ -1,9 +1,7 @@
 # from fund.tools.reptile import Reptile
 # from fund.tools.tool import Tool
 # from fund.dao.dao import Dao
-from fund.get_manager import Manager
-import time
-import sys
+from manager.get_manager import Manager
 
 # def main():
 

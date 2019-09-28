@@ -1,6 +1,6 @@
-from fund.tools.reptile import Reptile
-from fund.tools.tool import Tool
-from fund.dao.dao import Dao
+from tools.reptile import Reptile
+from tools.tool import Tool
+from dao import Dao
 import time
 import sys
 from multiprocessing import Process
