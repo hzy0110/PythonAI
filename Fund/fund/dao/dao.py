@@ -22,6 +22,9 @@ class Dao:
             return sqlStatus
 
     def save_fund_info(self, fund_info_pd, where_columns, where_value):
+        # 替换空值和空字符串
+        fund_info_pd.fillna(0, inplace=True)
+        fund_info_pd.replace(to_replace=r'^\s*$', value=0, regex=True, inplace=True)
         sql_str = self.get_update_sql(fund_info_pd, 'fund_info', where_columns, where_value)
         exec_info = fund_info_pd.apply(
             lambda x: self.execute_by_lambda(self.engineFunds.connect(), sql_str, x.tolist()), axis=1)
@@ -33,9 +36,34 @@ class Dao:
         # insert,update 模式下，需要插入where 信息
         fund_history_pd.insert(0, where_columns, where_value)
         fund_history_pd.fillna(0, inplace=True)
+        fund_history_pd.replace(to_replace=r'^\s*$', value=0, regex=True, inplace=True)
         sql_str = self.get_insert_update_sql(fund_history_pd, 'fund_history', where_columns, where_value)
         # print(sql_str)
         exec_info = fund_history_pd.apply(
+            lambda x: self.execute_by_lambda_double_value_list(self.engineFunds.connect(), sql_str, x.tolist()), axis=1)
+        rowcount = exec_info[0].rowcount
+        is_insert = exec_info[0].is_insert
+        return rowcount, is_insert
+
+    def save_manager_info(self, manager_info_pd):
+        # insert,update 模式下，需要插入where 信息
+        manager_info_pd.fillna(0, inplace=True)
+        manager_info_pd.replace(to_replace=r'^\s*$', value=0, regex=True, inplace=True)
+        sql_str = self.get_insert_update_sql(manager_info_pd, 'manager_info')
+        # print(sql_str)
+        exec_info = manager_info_pd.apply(
+            lambda x: self.execute_by_lambda_double_value_list(self.engineFunds.connect(), sql_str, x.tolist()), axis=1)
+        rowcount = exec_info[0].rowcount
+        is_insert = exec_info[0].is_insert
+        return rowcount, is_insert
+
+    def save_manager_current(self, manager_current_pd):
+        # insert,update 模式下，需要插入where 信息
+        manager_current_pd.fillna(0, inplace=True)
+        manager_current_pd.replace(to_replace=r'^\s*$', value=0, regex=True, inplace=True)
+        sql_str = self.get_insert_update_sql(manager_current_pd, 'manager_current')
+        # print(sql_str)
+        exec_info = manager_current_pd.apply(
             lambda x: self.execute_by_lambda_double_value_list(self.engineFunds.connect(), sql_str, x.tolist()), axis=1)
         rowcount = exec_info[0].rowcount
         is_insert = exec_info[0].is_insert
@@ -52,7 +80,7 @@ class Dao:
         sql_str = sql_str + ' where ' + where_columns + '=' + str(where_value)
         return sql_str
 
-    def get_insert_update_sql(self, df, table_name, where_columns, where_value):
+    def get_insert_update_sql(self, df, table_name):
         columns_list = df.columns.tolist()
         insert_columns_str = ''
         insert_value_str = ''

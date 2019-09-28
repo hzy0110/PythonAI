@@ -43,7 +43,7 @@ class Manager:
         allManager_pd = pd.read_csv('./data/manager/allManager_pd.csv', low_memory=False)
 
     # 计算任职时间
-    def workDay(self, dayStr):
+    def work_day(self, dayStr):
         manage_wordDay = dayStr.split('又')
         if len(manage_wordDay) > 1:
             manage_word_year = manage_wordDay[0].split('年')[0]
@@ -55,7 +55,7 @@ class Manager:
         return manage_wordDay_Total
 
     # 计算相似比率
-    def similarPer(similarStr):
+    def similar_per(similarStr):
         x = similarStr.split('|')[0]
         y = similarStr.split('|')[1]
         if x != '-' and y != '-':
