@@ -32,6 +32,17 @@ class Dao:
         is_insert = exec_info[0].is_insert
         return rowcount, is_insert
 
+    def save_fund_info(self, fund_info_pd):
+        # 替换空值和空字符串
+        fund_info_pd.fillna(0, inplace=True)
+        fund_info_pd.replace(to_replace=r'^\s*$', value=0, regex=True, inplace=True)
+        sql_str = self.get_insert_update_sql(fund_info_pd, 'fund_info')
+        exec_info = fund_info_pd.apply(
+            lambda x: self.execute_by_lambda_double_value_list(self.engineFunds.connect(), sql_str, x.tolist()), axis=1)
+        rowcount = exec_info[0].rowcount
+        is_insert = exec_info[0].is_insert
+        return rowcount, is_insert
+
     def save_fund_history(self, fund_history_pd, where_columns, where_value):
         # insert,update 模式下，需要插入where 信息
         fund_history_pd.insert(0, where_columns, where_value)

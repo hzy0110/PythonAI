@@ -1,8 +1,8 @@
 # from fund.tools.reptile import Reptile
 # from fund.tools.tool import Tool
 # from fund.dao.dao import Dao
-from manager.dispose_manager import Manager
-from fund.dispose_fund import Fund
+from run.fund import Fund
+from run.manager import Manager
 # def main():
 
 # allCodeType = Reptile().get_all_code_type()
@@ -53,8 +53,10 @@ from fund.dispose_fund import Fund
 #     # Dao().test()
 #
 # Manager().run_menager()
-Fund().run_reptile_pinzhongdata_multiple()
+# Fund().run_reptile_pinzhongdata_multiple()
+# 需要写一个覆盖基金类型的方法，手动测试类型，会导致数据不准确
 # Fund().run_reptile_pinzhongdata_test()
+Fund().fund_info_feature()
 # Fund().run_reptile_pinzhongdata_single()
 # if __name__ == "__main__":
 #     main()

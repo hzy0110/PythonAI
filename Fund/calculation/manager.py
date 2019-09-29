@@ -1,7 +1,7 @@
 import pandas as pd
 
 
-class Manager:
+class CalManager:
     def __init__(self):
         pd.set_option('expand_frame_repr', False)
         pd.set_option('display.max_rows', 500)

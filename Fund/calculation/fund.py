@@ -1,9 +1,9 @@
 import pandas as pd
 from tools.tool import Tool
-from tools.reptile import Reptile
+from reptile.fund import ReptileFund
 
 
-class Fund:
+class CalFund:
     def __init__(self):
         pd.set_option('expand_frame_repr', False)
         pd.set_option('display.max_rows', 500)
@@ -146,7 +146,7 @@ class Fund:
         # 交易日
         tradeDay_timestamp_list = Tool().getTradeDayList()
 
-        allCode = Reptile().get_all_code()
+        allCode = ReptileFund().get_all_code()
         # allCode = ['0040001']
         # allCode = ['000003'] # 分红测试用
 
@@ -374,7 +374,7 @@ class Fund:
 
     def dispose_manager(self, fund_wide_pd):
         fund_wide_manage_pd = pd.read_csv('./data/fund/fund_wide_rating_diff_pd.csv', low_memory=False)
-        allCode = Reptile().get_all_code()
+        allCode = ReptileFund().get_all_code()
         # allCode = ['040001','003150']
         manages_pd = pd.DataFrame()
         for code in allCode:

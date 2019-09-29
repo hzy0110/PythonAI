@@ -1,6 +1,7 @@
-from tools.reptile import Reptile
+from reptile.fund import ReptileFund
 from tools.tool import Tool
 from dao.dao import Dao
+import pandas as pd
 import time
 import sys
 from multiprocessing import Process, Queue
@@ -10,12 +11,12 @@ class Fund:
     def __init__(self):
         pass
 
-    def all_code_m(self, allCode, allType, error_queue):
+    def fund_info_pzdata(self, allCode, allType, error_queue):
         for i in range(len(allCode)):
             if i % 200 == 0:
                 print('进度:', i)
             try:
-                code, ishb, basic_info_pd, funds = Reptile().get_pingzhongdata(allCode[i], allType[i])
+                code, ishb, basic_info_pd, funds = ReptileFund().get_pingzhongdata(allCode[i], allType[i])
                 if ishb is not None:
                     if ishb:
                         fund_wide_pd, rateInSimilar_pd, grandTotal_pd, worth_pd, current_fund_manager_pd = Tool().get_hb_pingzhongdata_2_df(
@@ -46,8 +47,16 @@ class Fund:
                 # sys.stdout.flush()
         print("end")
 
-    def single_code(self, code_s, type_s):
-        code, ishb, basic_info_pd, funds = Reptile().get_pingzhongdata(code_s, type_s)
+    def fund_info_feature(self):
+        fund_info_feature_pd = pd.read_csv('../data/fund/feature_data_pd.csv', low_memory=False)
+        rowcount, is_insert = Dao().save_fund_info(fund_info_feature_pd)
+        print('rowcount', rowcount)
+
+    def fund_history_feature(self):
+        pass
+
+    def single_fund_info(self, code_s, type_s):
+        code, ishb, basic_info_pd, funds = ReptileFund().get_pingzhongdata(code_s, type_s)
         if ishb is not None:
             if ishb:
                 fund_wide_pd, rateInSimilar_pd, grandTotal_pd, worth_pd, current_fund_manager_pd = Tool().get_hb_pingzhongdata_2_df(
@@ -74,7 +83,7 @@ class Fund:
             # sys.stdout.flush()
 
     def run_reptile_pinzhongdata_multiple(self):
-        allCodeType = Reptile().get_all_code_type()
+        allCodeType = ReptileFund().get_all_code_type()
         error_queue = Queue()  # 实现子进程和主进程之间的报错信息通信
         # allCode1 = allCodeType.loc[0:2, 'code'].values.tolist()
         # allType1 = allCodeType.loc[0:2, 'type'].values.tolist()
@@ -112,14 +121,14 @@ class Fund:
 
         start = time.time()
 
-        p1 = Process(target=self.all_code_m, args=(allCode1, allType1, error_queue))
-        p2 = Process(target=self.all_code_m, args=(allCode2, allType2, error_queue))
-        p3 = Process(target=self.all_code_m, args=(allCode3, allType3, error_queue))
-        p4 = Process(target=self.all_code_m, args=(allCode4, allType4, error_queue))
-        p5 = Process(target=self.all_code_m, args=(allCode5, allType5, error_queue))
-        p6 = Process(target=self.all_code_m, args=(allCode6, allType6, error_queue))
-        p7 = Process(target=self.all_code_m, args=(allCode7, allType7, error_queue))
-        p8 = Process(target=self.all_code_m, args=(allCode8, allType8, error_queue))
+        p1 = Process(target=self.fund_info_pzdata, args=(allCode1, allType1, error_queue))
+        p2 = Process(target=self.fund_info_pzdata, args=(allCode2, allType2, error_queue))
+        p3 = Process(target=self.fund_info_pzdata, args=(allCode3, allType3, error_queue))
+        p4 = Process(target=self.fund_info_pzdata, args=(allCode4, allType4, error_queue))
+        p5 = Process(target=self.fund_info_pzdata, args=(allCode5, allType5, error_queue))
+        p6 = Process(target=self.fund_info_pzdata, args=(allCode6, allType6, error_queue))
+        p7 = Process(target=self.fund_info_pzdata, args=(allCode7, allType7, error_queue))
+        p8 = Process(target=self.fund_info_pzdata, args=(allCode8, allType8, error_queue))
         print('等待所有子进程完成。')
         p1.start()
         p2.start()
@@ -147,11 +156,11 @@ class Fund:
 
     def run_reptile_pinzhongdata_single(self):
         error_queue = Queue()
-        allCodeType = Reptile().get_all_code_type()
+        allCodeType = ReptileFund().get_all_code_type()
 
         allCode1 = allCodeType.loc[1002:1005, 'code'].values.tolist()
         allType1 = allCodeType.loc[1002:1005, 'type'].values.tolist()
-        self.all_code_m(allCode1, allType1, error_queue)
+        self.fund_info_pzdata(allCode1, allType1, error_queue)
 
     def run_reptile_pinzhongdata_test(self):
-        self.single_code('485018', '混合型')
+        self.single_code('000092', '混合型')
