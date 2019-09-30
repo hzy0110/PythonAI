@@ -9,10 +9,9 @@ class ReptileFund:
     def __init__(self):
         pass
 
-
     # 获取 js 数据
-    def get_pingzhongdata(self, fscode, type_name):
-        type_id = Tool().fund_type_2_num(type_name)
+    def get_pingzhongdata(self, fscode):
+        # type_id = Tool().fund_type_2_num(type_name)
         # 用requests获取到对应的文件
         content = requests.get(self.get_url(fscode))
 
@@ -50,12 +49,17 @@ class ReptileFund:
             'Data_currentFundManager')  # 现任基金经理  多个表示有多个经理
         # buySedemption = jsContent.eval('Data_buySedemption')  # 申购赎回
 
+        # basic_info_pd = pd.DataFrame(data=
+        #                              [[name, type_id, ishb, fund_sourceRate, fund_Rate, fund_minsg,
+        #                                syl_1n, syl_6y, syl_3y, syl_1y]],
+        #                              columns=[
+        #                                  "fund_name", "fund_type", 'ishb', "original_rate", "current_rate", "min_buy",
+        #                                  "near_earn_1y_per", "near_earn_6m_per", "near_earn_3m_per", "near_earn_1m_per"
+        #                              ])
+
         basic_info_pd = pd.DataFrame(data=
-                                     [[name, type_id, ishb, fund_sourceRate, fund_Rate, fund_minsg,
-                                       syl_1n, syl_6y, syl_3y, syl_1y]],
-                                     columns=[
-                                         "fund_name", "fund_type", 'ishb', "original_rate", "current_rate", "min_buy",
-                                         "near_earn_1y_per", "near_earn_6m_per", "near_earn_3m_per", "near_earn_1m_per"
+                                     [[syl_1n, syl_6y, syl_3y, syl_1y]],
+                                     columns=["near_earn_1y_per", "near_earn_6m_per", "near_earn_3m_per", "near_earn_1m_per"
                                      ])
 
         # stockCodesList = []

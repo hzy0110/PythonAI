@@ -4,6 +4,7 @@ import execjs
 
 
 class ReptileManager:
+    # 三个表数量不一致，接口缺30201745
     def get_all_manager(self):
         url = 'http://fund.eastmoney.com/Data/FundDataPortfolio_Interface.aspx?dt=14&mc=returnjson&ft=all&pn=3000&pi=1&sc=abbname&st=asc'
         content = requests.get(url)

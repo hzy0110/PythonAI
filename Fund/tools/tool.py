@@ -15,7 +15,7 @@ class Tool:
         pd.set_option('display.width', 1000)
 
     # 获取交易日期
-    def getTradeDay(self, targetDay, alldays):
+    def get_trade_day(self, targetDay, alldays):
         tradingdays = alldays[alldays['isOpen'] == 1]  # 开盘日
         if targetDay in tradingdays['calendarDate'].values:
             return True
@@ -23,10 +23,12 @@ class Tool:
             return False
 
     # 获取交易日期列表
-    def getTradeDayList(self, worth_pd):
+    def get_trade_day_list(self, timestamp):
         # 获取起始时间戳，用于交易日期
-        strartDate_pd = worth_pd.loc[(worth_pd[1] == 202001) & (worth_pd[0] == '时间戳')]
-        startDate_dt = datetime.datetime.fromtimestamp(int(strartDate_pd[2]) / 1000)
+        # strartDate_pd = worth_pd.loc[(worth_pd[1] == 202001) & (worth_pd[0] == '时间戳')]
+        # startDate_dt = datetime.datetime.fromtimestamp(int(strartDate_pd[2]) / 1000)
+        # strartDate_pd = 1569513600000
+        startDate_dt = datetime.datetime.fromtimestamp(int(timestamp) / 1000)
 
         alldays = ts.trade_cal()
         diffDay_list = []
@@ -47,24 +49,25 @@ class Tool:
                 #     print(diffDay)
                 #         targetDayStr = (datetime.datetime.now() - datetime.timedelta(days=diffDay)).strftime('%Y-%m-%d')
                 #     print(targetDayStr)
-                isTradeDay = self.getTradeDay(targetDayStr, alldays)
+                isTradeDay = self.get_trade_day(targetDayStr, alldays)
                 if not isTradeDay:
                     targetDay = datetime.datetime.strptime(targetDayStr, '%Y-%m-%d')
                     targetDayStr = (targetDay - relativedelta(days=-1)).strftime("%Y-%m-%d")
             tradeDay_list.append(targetDayStr)
 
-        # 获取时间戳和时间戳列表
-        def timestr_to_13timestamp(dt):
-            timearray = time.strptime(dt, '%Y-%m-%d')
-            timestamp13 = int(time.mktime(timearray))
-            return int(round(timestamp13 * 1000))
-
         tradeDay_timestamp_list = []
         for t in tradeDay_list:
-            tradeDay_timestamp_list.append(timestr_to_13timestamp(t))
+            tradeDay_timestamp_list.append(self.timestr_to_13timestamp(t))
         #     print(tradeDay_list)
         return tradeDay_timestamp_list
 
+    # 获取时间戳和时间戳列表
+    def timestr_to_13timestamp(self, dt):
+        timearray = time.strptime(dt, '%Y-%m-%d')
+        timestamp13 = int(time.mktime(timearray))
+        return int(round(timestamp13 * 1000))
+
+    # 获取基金类型的 typeid
     def fund_type_2_num(self, type_name):
         if type_name == 'ETF-场内':
             return 1
@@ -95,6 +98,7 @@ class Tool:
         elif type_name == '货币型':
             return 14
 
+    # 获取投资风格的 typeid
     def fund_invest_style(self, style_name):
         if style_name == '大盘价值':
             return 1
@@ -115,10 +119,31 @@ class Tool:
         elif style_name == '小盘成长':
             return 9
 
+    # 替换 none 变成 0
     def replace_none(self, none_str):
         if none_str == '暂无数据' or none_str == '--' or none_str == 'None':
             return 0
 
+    # 计算任职时间
+    def work_day(self, dayStr):
+        manage_wordDay = dayStr.split('又')
+        if len(manage_wordDay) > 1:
+            manage_word_year = manage_wordDay[0].split('年')[0]
+            manage_word_day = manage_wordDay[1].split('天')[0]
+            manage_wordDay_Total = int(manage_word_year) * 365 + int(
+                manage_word_day)
+        else:
+            manage_wordDay_Total = dayStr.split('天')[0]
+        return manage_wordDay_Total
+
+    # 分割相似比率
+    def similar_per(self, similarStr):
+        x = similarStr.split('|')[0]
+        y = similarStr.split('|')[1]
+        if x != '-' and y != '-':
+            return 1 - int(x) / int(y)
+        else:
+            return 0
 
     # def get_pingzhongdata_2_df(self, basic_info_pd, funds):
     #     # 数据合并到DF

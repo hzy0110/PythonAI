@@ -1,6 +1,8 @@
 from reptile.fund import ReptileFund
 from tools.tool import Tool
 from dao.dao import Dao
+from calculation.fund import CalFund
+from process.fund import ProcessFund
 import pandas as pd
 import time
 import sys
@@ -10,7 +12,11 @@ from multiprocessing import Process, Queue
 class Fund:
     def __init__(self):
         pass
+    # 计算运行部分
+    def fund_info_parameter(self):
+        CalFund().cal_fund_parameter_2_max_trade()
 
+    # 以下是爬虫运行部分
     def fund_info_pzdata(self, allCode, allType, error_queue):
         for i in range(len(allCode)):
             if i % 200 == 0:
@@ -19,10 +25,10 @@ class Fund:
                 code, ishb, basic_info_pd, funds = ReptileFund().get_pingzhongdata(allCode[i], allType[i])
                 if ishb is not None:
                     if ishb:
-                        fund_wide_pd, rateInSimilar_pd, grandTotal_pd, worth_pd, current_fund_manager_pd = Tool().get_hb_pingzhongdata_2_df(
+                        fund_wide_pd, rateInSimilar_pd, grandTotal_pd, worth_pd, current_fund_manager_pd = ProcessFund().get_hb_pingzhongdata_2_df(
                             basic_info_pd, funds)
                     else:
-                        fund_wide_pd, rateInSimilar_pd, grandTotal_pd, worth_pd, current_fund_manager_pd = Tool().get_pingzhongdata_2_df(
+                        fund_wide_pd, rateInSimilar_pd, grandTotal_pd, worth_pd, current_fund_manager_pd = ProcessFund().get_pingzhongdata_2_df(
                             basic_info_pd, funds)
                     # print(code, '用时2', end)
                     Dao().save_fund_info(fund_wide_pd, 'fund_code', int(code))
@@ -46,6 +52,10 @@ class Fund:
 
                 # sys.stdout.flush()
         print("end")
+    def fund_base_info(self):
+        fund_base_info = pd.read_csv('../data/fund/fund_base_info_pd.csv', low_memory=False)
+        rowcount, is_insert = Dao().save_fund_info(fund_base_info)
+        print('rowcount', rowcount)
 
     def fund_info_feature(self):
         fund_info_feature_pd = pd.read_csv('../data/fund/feature_data_pd.csv', low_memory=False)
@@ -53,16 +63,38 @@ class Fund:
         print('rowcount', rowcount)
 
     def fund_history_feature(self):
-        pass
+        feature_data_narrow_pd = pd.read_csv('../data/fund/feature_data_narrow_pd.csv', low_memory=False)
+        rowcount, is_insert = Dao().save_fund_history(feature_data_narrow_pd)
+        print('rowcount', rowcount)
+
+    def fund_history_manager(self):
+        fund_history_manager_pd = pd.read_csv('../data/fund/fund_history_manager_pd.csv', low_memory=False)
+        rowcount, is_insert = Dao().save_fund_history_manager(fund_history_manager_pd)
+        print('rowcount', rowcount)
+
+    def fund_info_shzq_star(self):
+        fund_shzq_rating_pd = pd.read_csv('../data/fund/fund_shzq_rating_pd.csv', low_memory=False)
+        rowcount, is_insert = Dao().save_fund_info(fund_shzq_rating_pd)
+        print('rowcount', rowcount)
+
+    def fund_info_zszq_star(self):
+        fund_shzq_rating_pd = pd.read_csv('../data/fund/fund_zszq_rating_pd.csv', low_memory=False)
+        rowcount, is_insert = Dao().save_fund_info(fund_shzq_rating_pd)
+        print('rowcount', rowcount)
+
+    def fund_info_jajx_star(self):
+        fund_shzq_rating_pd = pd.read_csv('../data/fund/fund_jajx_rating_pd.csv', low_memory=False)
+        rowcount, is_insert = Dao().save_fund_info(fund_shzq_rating_pd)
+        print('rowcount', rowcount)
 
     def single_fund_info(self, code_s, type_s):
         code, ishb, basic_info_pd, funds = ReptileFund().get_pingzhongdata(code_s, type_s)
         if ishb is not None:
             if ishb:
-                fund_wide_pd, rateInSimilar_pd, grandTotal_pd, worth_pd, current_fund_manager_pd = Tool().get_hb_pingzhongdata_2_df(
+                fund_wide_pd, rateInSimilar_pd, grandTotal_pd, worth_pd, current_fund_manager_pd = ProcessFund().get_hb_pingzhongdata_2_df(
                     basic_info_pd, funds)
             else:
-                fund_wide_pd, rateInSimilar_pd, grandTotal_pd, worth_pd, current_fund_manager_pd = Tool().get_pingzhongdata_2_df(
+                fund_wide_pd, rateInSimilar_pd, grandTotal_pd, worth_pd, current_fund_manager_pd = ProcessFund().get_pingzhongdata_2_df(
                     basic_info_pd, funds)
             # print(code, '用时2', end)
             Dao().save_fund_info(fund_wide_pd, 'fund_code', int(code))
