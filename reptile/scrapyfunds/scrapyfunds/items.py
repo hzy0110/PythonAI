@@ -12,11 +12,14 @@ class ScrapyfundsItem(scrapy.Item):
     # define the fields for your item here like:
     # name = scrapy.Field()
     feature_data_pd = scrapy.Field()  # 特色数据
-    fund_grant_total_pd = scrapy.Field()  # 特色数据
-    fund_rating_pd = scrapy.Field()  # 特色数据
-    fund_shzq_rating_pd = scrapy.Field()  # 特色数据
-    fund_zszq_rating_pd = scrapy.Field()  # 特色数据
-    fund_jajx_rating_pd = scrapy.Field()  # 特色数据
+    feature_data_narrow_pd = scrapy.Field()  # 特色数据
+    fund_grant_total_pd = scrapy.Field()  # 累计收益数据
+    fund_rating_pd = scrapy.Field()  # 基础信息
+    fund_base_info = scrapy.Field()  # 评级数据
+    fund_shzq_rating_pd = scrapy.Field()  # 评级数据
+    fund_zszq_rating_pd = scrapy.Field()  # 评级数据
+    fund_jajx_rating_pd = scrapy.Field()  # 评级数据
+    manager_current_pd = scrapy.Field()  # 经理的pd集合
     manager_pd = scrapy.Field()  # 经理的pd集合
     fund_history_manager_pd = scrapy.Field()  # 基金历史经理
     manager_id = scrapy.Field()  #经理 ID

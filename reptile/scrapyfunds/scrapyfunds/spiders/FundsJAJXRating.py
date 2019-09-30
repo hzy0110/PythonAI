@@ -54,10 +54,10 @@ class FundsSpider(scrapy.Spider):
             if th.xpath('text()').get() is not None:
                 c_name = th.xpath('text()').get()
             if c_name == '代码':
-                c_name = 'code'
+                c_name = 'fund_code'
             if c_name == '3年期评级':
-                c_name = '济安金信3年期评级'
-            if c_name == 'code' or c_name == '济安金信3年期评级':
+                c_name = 'jajx_start_3y_num'
+            if c_name == 'fund_code' or c_name == 'jajx_start_3y_num':
                 columns_list.append(c_name)
         fund_rating_pd = pd.DataFrame(columns=columns_list)
         trs = data.xpath('tbody/tr')

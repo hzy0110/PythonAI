@@ -28,6 +28,84 @@ import pandas as pd
 #
 import datetime
 from dateutil.relativedelta import relativedelta
-a = (datetime.date.today() - relativedelta(years=+1)).strftime("%Y-%m-%d")
-print(a, type(a))
-pd.read_csv('./data/fund/fund_wide_rating_diff_pd.csv',low_memory=False)
+import time
+import calendar
+import arrow
+
+#
+# def get_quarter_end():
+#     now = arrow.utcnow().to("local")
+#     return now.ceil("quarter")
+
+# print(get_quarter_end())
+
+
+def getQuarterDateByStr():
+    quarter_list = []
+    for i in range(-1, -9, -1):
+        # print('i', i)
+        a = arrow.utcnow().to("local").shift(months=i*3)
+        # print(a)
+        # print(a.ceil("quarter").format('YYYY-MM-DD'))
+        quarter_list.append(a.ceil("quarter").format('YYYY-MM-DD'))
+    return quarter_list
+
+getQuarterDateByStr()
+
+# def add_months(dt,months):
+#     #返回dt隔months个月后的日期，months相当于步长
+#     month = dt.month - 1 + months
+#     year = int(dt.year + month / 12)
+#     month = month % 12 + 1
+#     print(year, month)
+#     day = min(dt.day, calendar.monthrange(year, month)[1])
+#     return dt.replace(year=year, month=month, day=day)
+#
+# def getBetweenMonth(begin_date):
+#     date_list = []
+#     begin_date = datetime.datetime.strptime(begin_date, "%Y-%m-%d")
+#     end_date = datetime.datetime.strptime(time.strftime('%Y-%m-%d', time.localtime(time.time())), "%Y-%m-%d")
+#     while begin_date <= end_date:
+#         date_str = begin_date.strftime("%Y-%m")
+#         date_list.append(date_str)
+#         begin_date = add_months(begin_date, 1)
+#     return date_list
+#
+# def getBetweenQuarter(begin_date):
+#     quarter_list = []
+#     month_list = getBetweenMonth(begin_date)
+#     for value in month_list:
+#         tempvalue = value.split("-")
+#         if tempvalue[1] in ['01','02','03']:
+#             quarter_list.append(tempvalue[0] + "Q1")
+#         elif tempvalue[1] in ['04','05','06']:
+#             quarter_list.append(tempvalue[0] + "Q2")
+#         elif tempvalue[1] in ['07', '08', '09']:
+#             quarter_list.append(tempvalue[0] + "Q3")
+#         elif tempvalue[1] in ['10', '11', '12']:
+#             quarter_list.append(tempvalue[0] + "Q4")
+#     quarter_set = set(quarter_list)
+#     quarter_list = list(quarter_set)
+#     quarter_list.sort()
+#     return quarter_list
+#
+# print(getBetweenQuarter('2017-01-01'))
+
+# str = '基金投资风格2019年2季度'.replace('基金投资风格', '')
+# year = str.split('年')[0] + '-'
+# quarter = str.split('年')[1].split('季度')[0]
+# quarterDate = ''
+# if quarter == "1":
+#     quarterDate = '3-31'
+# elif quarter == "2":
+#     quarterDate = '6-30'
+# elif quarter == "3":
+#     quarterDate = '9-30'
+# elif quarter == "4":
+#     quarterDate = '12-31'
+# styleStr = year + quarterDate
+# styleDate = datetime.datetime.strptime(styleStr, '%Y-%m-%d')
+# print(styleStr)
+# print(styleDate)
+# print(styleDate.strftime("%Y-%m-%d"))
+
